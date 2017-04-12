@@ -1,0 +1,11 @@
+watch "/home/processing/scratch/incoming/metop/" do
+  match file 'done' do |path|
+	source_dir = File.dirname(path)
+	basename = File.basename(source_dir)
+	target_dir = "/home/processing/scratch/mirs/amsu/" + basename
+	system("mkdir -v  #{target_dir}")
+	system("mirs_l0.rb -s metop-b #{source_dir} #{target_dir}")
+	system("touch  #{target_dir}.done")
+  end
+end
+

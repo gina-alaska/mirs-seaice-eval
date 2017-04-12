@@ -1,0 +1,13 @@
+watch "/home/processing/distro/atms/awips/" do
+  match file '.*.nc.gz' do |path|
+	system("cp -v #{path} /home/processing/distro/mirs_awips/")
+  end
+end
+
+watch "/home/processing/distro/amsu/awips/" do
+  match file '.*.nc.gz' do |path|
+        system("cp -v #{path} /home/processing/distro/mirs_awips/")
+  end
+end
+
+

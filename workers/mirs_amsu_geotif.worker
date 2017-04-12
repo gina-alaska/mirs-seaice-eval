@@ -1,0 +1,25 @@
+watch "/home/processing/scratch/mirs/amsu/" do
+  match file 'done' do |path|
+	source_dir = File.dirname(path) + "/" + File.basename(path, ".done")
+	basename_source = File.basename(path, ".done")
+	basename_source = File.basename(basename_source, ".gz")
+	target_dir = "/home/processing/distro/amsu/geotif/" + basename_source
+	system("mkdir -p -v  #{target_dir}")
+	system("mirs_geotif.rb -s amsu #{source_dir} #{target_dir}")
+	
+	#make overviews - not to be done operationally. 
+        tifs = Dir.glob("#{target_dir}/*sea*.tif") do |tif|
+                basename = File.dirname(tif) + "/" + File.basename(tif, ".tif")
+                system("gdal_translate -scale 1 100 1 253 -ot byte  #{basename}.tif #{basename}.tmp.tif")
+                system("gdal_rasterize -burn 254 -b 1 $HOME/linework/alaska_63360_ln_203.shp  #{basename}.tmp.tif")
+                system("gdal_translate -of png #{basename}.tmp.tif #{basename}.png")
+                system("rm -v #{basename}.tmp.tif")
+        end
+
+
+        target_dir = "/home/processing/distro/amsu/awips/" + basename_source
+        system("mkdir -p -v  #{target_dir}")
+        system("mirs_awips.rb -s amsu #{source_dir} #{target_dir}")
+  end
+end
+
